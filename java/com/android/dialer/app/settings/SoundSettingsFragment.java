@@ -235,6 +235,37 @@ public class SoundSettingsFragment extends PreferenceFragment
       }
       return true;
     }
+    if (preference == mEnableDndInCall) {
+      boolean newValue = (Boolean) objValue;
+      if (newValue) {
+        if (mNotificationManager.isNotificationPolicyAccessGranted()) {
+          return true;
+        } else {
+          AlertDialog dialog = new AlertDialog.Builder(getContext())
+              .setMessage(R.string.incall_dnd_dialog_message)
+              .setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                  Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                  startActivity(intent);
+                }
+              })
+              .setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  dialog.dismiss();
+                }
+              })
+              .create();
+          dialog.show();
+
+          // At this time, it is unknown whether the user granted the permission
+          return false;
+        }
+      }
+      return true;
+    }
     return true;
   }
 
